@@ -3,6 +3,7 @@ import "./App.css";
 import { Instructions, Modal } from "./components";
 import { useState } from "react";
 import Papa from "papaparse";
+import generateMShotsUrl from "./lib/mShots";
 
 const Header = (props) => {
   return (
@@ -50,10 +51,28 @@ const Home = (props) => {
   )
 }
 
+const noop = () => {}
+
+const preFetchUrls = (data) => {
+	const dataWithoutStatus = data.filter((item) => item.status === "");
+	const urlsToPreFetch = new Set();
+	dataWithoutStatus.forEach((item) => {
+		// Add to set to prune any duplicates and avoid pointless web requests
+		urlsToPreFetch.add(item.oldUrl);
+		urlsToPreFetch.add(item.newUrl);
+	})
+
+	urlsToPreFetch.forEach((url) => {
+		// TODO: if the pre-fetching fails, we can optionally log something if we want
+		fetch(generateMShotsUrl(url)).catch(noop);
+	})
+}
+
 function App() {
   const [parsedData, setParsedData] = useState([]);
   const [isActive, setIsActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
+
 
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -62,6 +81,7 @@ function App() {
       skipEmptyLines: true,
       complete: function (results) {
         setParsedData(results.data);
+		preFetchUrls(results.data);
       },
     });
 
