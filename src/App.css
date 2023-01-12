@@ -1,12 +1,12 @@
 /* ELEMENT STYLES -------------------- */
 
 body {
-  background: #fff; 
+  background: #fff;
   font-family: arial;
 }
 
 header {
-  color: #FFF;
+  color: #fff;
   padding: 5px 10px;
   text-align: center;
   display: flex;
@@ -52,8 +52,8 @@ button.reject {
 }
 
 button.accept {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
+  background-color: #4caf50;
+  border-color: #4caf50;
 }
 
 .column p {
@@ -95,20 +95,27 @@ button.accept {
 iframe.preview {
   border-radius: 4px;
   border: 1px solid #e3e3e3;
-  background: #FFF;
+  background: #fff;
 }
 
-.action, .download, .skip {
-  display: flex; 
+.preview-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.action,
+.download,
+.skip {
+  display: flex;
   justify-content: flex-end;
 }
 
 .navigation {
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
 }
 
 .column {
-  display: inline;
 }
