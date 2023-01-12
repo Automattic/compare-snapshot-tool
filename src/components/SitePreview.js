@@ -17,8 +17,11 @@ const Preview = (props) => {
 }
 
 function SitePreview(props) {
-    const generateMShotsUrl = (url) => {
-        return 'https://s0.wp.com/mshots/v1/' + url + '?screen_height=3200';
+    const generateMShotsUrl = (targetUrl) => {
+		let url = new URL('https://s0.wp.com/mshots/v1/');
+		url.pathname = url.pathname + targetUrl;
+		url.searchParams.append('screen_height', '3200');
+		return url.href;
     }
 
     let index = props.activeData + 1;
