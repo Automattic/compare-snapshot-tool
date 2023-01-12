@@ -51,6 +51,15 @@ const Home = (props) => {
   )
 }
 
+const Loading = () => {
+	return (
+		<div className="loading-panel">
+			<span className="loading-icon">&#10710;</span>
+			<p className="loading-message">Preparing the snapshots...</p>
+		</div>
+	)
+}
+
 const noop = () => {}
 
 const preFetchUrls = (data) => {
@@ -68,10 +77,42 @@ const preFetchUrls = (data) => {
 	})
 }
 
+const waitForFirstUrls = async (data) => {
+	const firstData = data?.[0];
+	if (!firstData) {
+		return;
+	}
+
+	const fetchUntilNotRedirected = async (url) => {
+		const maxAttempts = 15;
+
+		const wait = (ms) => new Promise((res) => {
+			setTimeout(res, ms);
+		})
+
+		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+			const response = await fetch(generateMShotsUrl(url));
+			if (!response.redirected) {
+				// Even once mShots stops redirecting, there can be a race condition sometimes
+				// when you return immediately. Adding one small pauses right before returning helps
+				// make the iframes more consistent.
+				await wait(500);
+				return;
+			}
+			await wait(1000);
+		}
+	}
+
+	await Promise.all([
+		fetchUntilNotRedirected(firstData.oldUrl),
+		fetchUntilNotRedirected(firstData.newUrl)
+	]);
+}
+
 function App() {
   const [parsedData, setParsedData] = useState([]);
-  const [isActive, setIsActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
+  const [appStage, setAppStage] = useState('HOME')
 
 
   const changeHandler = (event) => {
@@ -81,33 +122,49 @@ function App() {
       skipEmptyLines: true,
       complete: function (results) {
         setParsedData(results.data);
-		preFetchUrls(results.data);
       },
     });
-
   }
   
-  const handleSubmission = () => {
-    if (selectedFile !== undefined) {
-      setIsActive(true);
-    } else {
-      alert("Please select a file first.")
-    }
+	const handleSubmission = () => {
+		if (!selectedFile) {
+			alert("Please select a file first.");
+		}
+		else {
+			setAppStage('LOADING');
+			preFetchUrls(parsedData);
+			waitForFirstUrls(parsedData).then(() => {
+				setAppStage('MODAL');
+			})
+		}
+	}
+
+	let mainDisplay = null;
+	switch (appStage) {
+		case 'LOADING': {
+			mainDisplay = <Loading />;
+			break;
+		}
+		case 'MODAL': {
+			mainDisplay = <Modal parsedData={parsedData}/>;
+			break;
+		}
+		case 'HOME': 
+		default: {
+			mainDisplay = <Home 
+				data={parsedData}
+				selectedFile={selectedFile}
+				onChange={changeHandler}
+				onClick={handleSubmission}
+			/>;
+			break;
+		}
 	}
 
   return (
     <div id="main-app">
       <Header title="Image Comparison Tool" />
-      { !isActive ? (
-        <Home 
-          data={parsedData}
-          selectedFile={selectedFile}
-          onChange={changeHandler}
-          onClick={handleSubmission}
-        />
-      ) : (
-        <Modal parsedData={parsedData}/>
-      )}
+			{mainDisplay}
     </div>
   )
 }

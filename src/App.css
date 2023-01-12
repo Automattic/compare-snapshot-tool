@@ -119,3 +119,39 @@ iframe.preview {
 
 .column {
 }
+
+.loading-panel {
+  height: 720px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #4d4d4d;
+  animation-name: fade;
+  animation-duration: 3000ms;
+  animation-iteration-count: infinite;
+}
+
+.loading-icon {
+  font-size: 100px;
+  color: #4d4d4d;
+  height: 100px;
+  line-height: 100px;
+  white-space: nowrap;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.loading-message {
+  margin: 0;
+  font-size: 2rem;
+}
