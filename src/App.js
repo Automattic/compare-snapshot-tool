@@ -122,12 +122,23 @@ function App() {
       skipEmptyLines: true,
       complete: function (results) {
         const headers = results.meta.fields;
-          const intersection = headers.filter(element => requiredHeaders.includes(element));
-          if (intersection.length === requiredHeaders.length) {
-            setSelectedFile(event.target.files[0]);
-          } else {
-            alert("Please check the headers in the CSV file. The required headers are: oldUrl, newUrl, status, comment");
-          }
+				let isValid = true;
+				// All of the required headers must be present...
+				for (const requiredHeader of requiredHeaders) {
+					if (!headers.includes(requiredHeader)) {
+						isValid = false;
+					}
+				}
+				// ... And there shouldn't be other excess headers
+				if (headers.length !== requiredHeaders.length) {
+					isValid = false;
+				}
+				
+				if (isValid) {
+					setSelectedFile(event.target.files[0]);
+				} else {
+					alert("Please check the headers in the CSV file. The required headers are: oldUrl, newUrl, status, comment");
+				}
         setParsedData(results.data);
       },
     });
