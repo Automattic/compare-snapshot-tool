@@ -1,19 +1,28 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Download, Navigation, Popup, SitePreview } from "./index.js";
 import Papa from "papaparse";
 
 const Actions = (props) => {
     const [isOpen, setIsOpen] = useState(false);
+	const {onReject, onAccept, currentComment} = props;
+
+	const handlePopupSave = useCallback((comment) => {
+		onReject(comment);
+		setIsOpen(false);
+	}, [onReject]);
+
+	const handlePopupCancel = useCallback(() => {
+		setIsOpen(false);
+	}, [])
 
     return (
         <div className="action">
-            <button className="accept" onClick={props.onAccept}>Accept</button>
+            <button className="accept" onClick={onAccept}>Accept</button>
             <button className="reject" onClick={() => setIsOpen(true)}>Reject</button>
             {isOpen ? <Popup 
-                title="Hello there!" 
-                closePopup={() => setIsOpen(false)} 
-                onReject={props.onReject}
-                value={props.currentComment}
+                onSave={handlePopupSave} 
+                onCancel={handlePopupCancel}
+                startingComment={currentComment}
             /> 
             : null}
         </div>

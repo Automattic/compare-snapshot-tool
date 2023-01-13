@@ -1,14 +1,11 @@
 import { useState } from "react";
 
 export default function Popup(props) {
-    const [comment, setComment] = useState(props.value);
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if ( !comment ) {
-            setComment(props.value);
-        }
-        props.onReject(comment);
-        props.closePopup();
+    const [comment, setComment] = useState(props.startingComment);
+    const handleSave = () => {
+		// Fall back to initial comment if they delete the comment
+		const commentToSave = comment || props.startingComment;
+        props.onSave(commentToSave);
     }
 
     const handleOnChange = (event) => {
@@ -25,12 +22,12 @@ export default function Popup(props) {
                         rows="10" 
                         cols="100" 
                         onChange={handleOnChange}
-                        defaultValue={props.value}
+                        value={comment}
                     ></textarea>
                 </form>
                 <div className="popup-actions">
-                    <button className="accept" onClick={handleSubmit}>Save</button>    
-                    <button className="reject" onClick={props.closePopup}>Cancel</button>
+                    <button className="accept" onClick={handleSave}>Save</button>    
+                    <button className="reject" onClick={props.onCancel}>Cancel</button>
                 </div>
             </div>
         </div>
