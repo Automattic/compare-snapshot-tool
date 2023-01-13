@@ -32,21 +32,59 @@ const Data = (props) => {
    )
 }
 
+const dataIsSet = (data) => data && data.length > 0
+
 const Home = (props) => {
+	const handleChange = (event) => {
+    const requiredHeaders = ['oldUrl', 'newUrl', 'status', 'comment'];
+		const file = event.target.files[0]
+		if (!file) {
+			props.setData([]);
+			return;
+		}
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        const headers = results.meta.fields;
+				let isValid = true;
+				// All of the required headers must be present...
+				for (const requiredHeader of requiredHeaders) {
+					if (!headers.includes(requiredHeader)) {
+						isValid = false;
+					}
+				}
+				// ... And there shouldn't be other excess headers
+				if (headers.length !== requiredHeaders.length) {
+					isValid = false;
+				}
+
+				if (isValid) {
+					props.setData(results.data);
+				} else {
+					// You can't control file state directly in react, so we wipe the event value to reset the native HTML input state.
+					event.target.value = null;
+					props.setData([]);
+					alert("Please check the headers in the CSV file. The required headers are: oldUrl, newUrl, status, comment");
+				}
+      },
+    });
+  }
+
+
   return (
     <div className='image-comparison-tool'>
       <Instructions />
-      <input type="file" name="file" className="input-file" onChange={props.onChange} accept=".csv" />
-      { props.selectedFile !== undefined ? (
-        <Data  
-          data={props.data}
-        />
+      <input type="file" name="file" className="input-file" onChange={handleChange} accept=".csv" />
+      { dataIsSet(props.data) ? (
+        <Data data={props.data}/>
       ) : (
         <div>
           <p>Select a file to show details</p>  
         </div>
       )}
-      <button onClick={props.onClick}>Start comparing images</button>
+      <button onClick={props.onSubmission}>Start comparing images</button>
     </div>
   )
 }
@@ -111,23 +149,10 @@ const waitForFirstUrls = async (data) => {
 
 function App() {
   const [parsedData, setParsedData] = useState([]);
-  const [selectedFile, setSelectedFile] = useState();
   const [appStage, setAppStage] = useState('HOME')
-
-
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setParsedData(results.data);
-      },
-    });
-  }
   
 	const handleSubmission = () => {
-		if (!selectedFile) {
+		if (!dataIsSet(parsedData)) {
 			alert("Please select a file first.");
 		}
 		else {
@@ -153,9 +178,8 @@ function App() {
 		default: {
 			mainDisplay = <Home 
 				data={parsedData}
-				selectedFile={selectedFile}
-				onChange={changeHandler}
-				onClick={handleSubmission}
+				setData={setParsedData}
+				onSubmission={handleSubmission}
 			/>;
 			break;
 		}
