@@ -1,12 +1,30 @@
-import { useState } from "react";
-import { Download, Navigation, SitePreview} from "./index.js";
+import { useCallback, useState } from "react";
+import { Download, Navigation, Popup, SitePreview } from "./index.js";
 import Papa from "papaparse";
 
 const Actions = (props) => {
+    const [isOpen, setIsOpen] = useState(false);
+	const {onReject, onAccept, currentComment} = props;
+
+	const handlePopupSave = useCallback((comment) => {
+		onReject(comment);
+		setIsOpen(false);
+	}, [onReject]);
+
+	const handlePopupCancel = useCallback(() => {
+		setIsOpen(false);
+	}, [])
+
     return (
         <div className="action">
-            <button className="accept" onClick={props.onAccept}>Accept</button>
-            <button className="reject" onClick={props.onReject}>Reject</button>
+            <button className="accept" onClick={onAccept}>Accept</button>
+            <button className="reject" onClick={() => setIsOpen(true)}>Reject</button>
+            {isOpen ? <Popup 
+                onSave={handlePopupSave} 
+                onCancel={handlePopupCancel}
+                startingComment={currentComment}
+            /> 
+            : null}
         </div>
     )
 }
@@ -25,29 +43,36 @@ function Modal(props) {
     const [activeData, setActiveData] = useState(0);
 
     const handleAccept = () => {
+        const prevFailureMessage = "Previous failure message - ";
+        let comment = newData[activeData].comment;
+        let finalComment = comment;
+        if ( newData[activeData].status === 'FAILED' && comment.length > 0 ) {
+            finalComment = prevFailureMessage.concat(comment);
+        }
+
         setNewData(prevNewData => prevNewData.map((data, i) => {
           if (i === activeData) {
             return {
               ...data,
-              status: 'PASSED'
+              status: 'PASSED',
+              comment: finalComment
             }
           }
           return data;
         }));
-        handleNextData();
       }
     
-    const handleReject = () => {
+    const handleReject = (comment) => {
         setNewData(prevNewData => prevNewData.map((data, i) => {
             if (i === activeData) {
             return {
                 ...data,
-                status: 'FAILED'
+                status: 'FAILED',
+                comment: comment
             }
             }
             return data;
         }));
-        handleNextData();
     }
 
     const handleNextData = () => {
@@ -90,11 +115,15 @@ function Modal(props) {
                 <div id="status">
                     <span id="status-text"></span>
                     <p>
-                    <strong>Status:</strong> {newData[activeData].status}
+                        <strong>Status: </strong>{newData[activeData].status}
+                    </p>
+                    <p>
+                        <strong>Comment: </strong>{newData[activeData].comment}
                     </p>
                     <Actions 
                         onAccept={handleAccept}
                         onReject={handleReject}
+                        currentComment={newData[activeData].comment}
                     />
                 </div>
                 <SitePreview 
