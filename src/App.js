@@ -7,7 +7,7 @@ import generateMShotsUrl from "./lib/mShots";
 
 const Header = (props) => {
   return (
-    <header>
+    <header className="app-header">
       <h1>{props.title}</h1>
       <p>{props.message}</p>
     </header>
