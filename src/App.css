@@ -89,19 +89,19 @@
   margin-top: 30px;
 }
 
-textarea {
+#main-app textarea {
   background: #ffffff;
   border-radius: 0;
   border: 1px solid #ededed;
   font-size: 14px;
   line-height: 1.5;
-  padding: 8px 0;
+  padding: 8px;
   resize: none;
   transition: border-color 150ms ease;
   width: 100%;
 }
 
-label {
+#main-app label {
   color: #727272;
   font-size: 14px;
   margin-bottom: 20px;
@@ -208,14 +208,12 @@ label {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
 }
 
 .popup-body {
-  position: absolute;
-  left: 30%;
-  right: 30%;
-  bottom: 35%;
-  top: 35%;
+  max-width: 800px;
   margin: auto;
   padding: 40px;
   border-radius: 15px;
@@ -226,6 +224,6 @@ label {
 
 .popup-actions {
   padding: 10px;
-  display: flex; 
+  display: flex;
   justify-content: center;
 }
