@@ -116,11 +116,18 @@ function App() {
 
 
   const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
+    const requiredHeaders = ['oldUrl', 'newUrl', 'status', 'comment'];
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
+        const headers = results.meta.fields;
+          const intersection = headers.filter(element => requiredHeaders.includes(element));
+          if (intersection.length === requiredHeaders.length) {
+            setSelectedFile(event.target.files[0]);
+          } else {
+            alert("Please check the headers in the CSV file. The required headers are: oldUrl, newUrl, status, comment");
+          }
         setParsedData(results.data);
       },
     });
