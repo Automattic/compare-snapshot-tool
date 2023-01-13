@@ -154,6 +154,10 @@
   justify-content: flex-end;
 }
 
+.skip {
+  align-items: center;
+}
+
 .navigation {
   display: flex;
   align-items: center;

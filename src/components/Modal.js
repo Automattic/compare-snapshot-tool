@@ -32,7 +32,7 @@ const Actions = (props) => {
 const Skip = (props) => {
     return (
         <div className="skip">
-            <p>To skip to the item without status: </p>
+            <span>To skip to the item without status: </span>
             <button className="skip-button" onClick={props.onSkip}>Skip</button>
         </div>
     )
