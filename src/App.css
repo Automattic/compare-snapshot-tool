@@ -101,12 +101,6 @@
   width: 100%;
 }
 
-#main-app label {
-  color: #727272;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
 /* Component styles */
 
 .image-comparison-tool {
@@ -139,6 +133,7 @@
   border-radius: 4px;
   border: 1px solid #e3e3e3;
   background: #fff;
+  transform-origin: 0 0;
 }
 
 .preview-top-bar {
@@ -213,6 +208,7 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  z-index: 2;
   justify-content: center;
 }
 

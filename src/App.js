@@ -27,7 +27,7 @@ const Data = (props) => {
     <div>
       <p>Number of items: {props.data.length}</p>
       <p>Total passed: {getTotalPassed()}</p>
-      <p>Total failed: {getTotalFailed()}</p>
+      <p>Total failed: {getTotalFailed()}</p>	
     </div>
    )
 }
@@ -35,6 +35,7 @@ const Data = (props) => {
 const dataIsSet = (data) => data && data.length > 0
 
 const Home = (props) => {
+	const [usemShots, setUsemShots] = useState(false);
 	const handleChange = (event) => {
     const requiredHeaders = ['oldUrl', 'newUrl', 'status', 'comment'];
 		const file = event.target.files[0]
@@ -84,7 +85,13 @@ const Home = (props) => {
           <p>Select a file to show details</p>  
         </div>
       )}
-      <button onClick={props.onSubmission}>Start comparing images</button>
+	  <div>
+		<label>
+			<input type="checkbox" id="checkbox" checked={usemShots} onChange={event => setUsemShots(event.target.checked)} />
+			<span> Use mshots (not pure iframes)</span>
+		</label>
+	  </div>		
+      <button onClick={() => props.onSubmission(usemShots)}>Start comparing images</button>
     </div>
   )
 }
@@ -129,14 +136,16 @@ const waitForFirstUrls = async (data) => {
 		})
 
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-			const response = await fetch(generateMShotsUrl(url));
-			if (!response.redirected) {
-				// Even once mShots stops redirecting, there can be a race condition sometimes
-				// when you return immediately. Adding one small pauses right before returning helps
-				// make the iframes more consistent.
-				await wait(500);
-				return;
-			}
+			const mshotsUrl = generateMShotsUrl(url);
+			const response = await fetch(mshotsUrl, { mode: 'no-cors' });
+				if (!response.redirected) {
+					// Even once mShots stops redirecting, there can be a race condition sometimes
+					// when you return immediately. Adding one small pauses right before returning helps
+					// make the iframes more consistent.
+					await wait(500);
+					return;
+				}
+			
 			await wait(1000);
 		}
 	}
@@ -149,18 +158,25 @@ const waitForFirstUrls = async (data) => {
 
 function App() {
   const [parsedData, setParsedData] = useState([]);
-  const [appStage, setAppStage] = useState('HOME')
+  const [appStage, setAppStage] = useState('HOME');
+  const [usemShots, setUsemShots] = useState(false);
   
-	const handleSubmission = () => {
+	const handleSubmission = (usemShots) => {
+		setUsemShots(usemShots);
+		
 		if (!dataIsSet(parsedData)) {
 			alert("Please select a file first.");
 		}
 		else {
-			setAppStage('LOADING');
-			preFetchUrls(parsedData);
-			waitForFirstUrls(parsedData).then(() => {
+			if(usemShots) {
+				setAppStage('LOADING');
+				preFetchUrls(parsedData);
+				waitForFirstUrls(parsedData).then(() => {
+					setAppStage('MODAL');
+				})
+			} else {
 				setAppStage('MODAL');
-			})
+			}			
 		}
 	}
 
@@ -171,7 +187,7 @@ function App() {
 			break;
 		}
 		case 'MODAL': {
-			mainDisplay = <Modal parsedData={parsedData}/>;
+			mainDisplay = <Modal parsedData={parsedData} usemShots={usemShots} />
 			break;
 		}
 		case 'HOME': 

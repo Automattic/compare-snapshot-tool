@@ -1,6 +1,7 @@
 function generateMShotsUrl(targetUrl) {
 	let url = new URL('https://s0.wp.com/mshots/v1/');
-	url.pathname = url.pathname + targetUrl;
+	url.pathname = url.pathname + encodeURIComponent(targetUrl);
+	url.searchParams.append('vpw', '1920');
 	url.searchParams.append('screen_height', '3200');
 	return url.href;
 }
