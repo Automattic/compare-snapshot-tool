@@ -2,24 +2,22 @@ import { useCallback, useEffect, useState } from "react";
 import { Download, Navigation, Popup, SitePreview } from "./index.js";
 import Papa from "papaparse";
 
-const Actions = (props) => {
-    const [isOpen, setIsOpen] = useState(false);
-	const {onReject, onAccept, currentComment} = props;
+const Actions = ({onReject, onAccept, currentComment, popoverOpen, setPopoverOpen}) => {
 
 	const handlePopupSave = useCallback((comment) => {
 		onReject(comment);
-		setIsOpen(false);
-	}, [onReject]);
+		setPopoverOpen(false);
+	}, [onReject, setPopoverOpen]);
 
 	const handlePopupCancel = useCallback(() => {
-		setIsOpen(false);
-	}, [])
+		setPopoverOpen(false);
+	}, [setPopoverOpen])
 
     return (
         <div className="action">
             <button className="accept" onClick={onAccept}>Accept ↵</button>
-            <button className="reject" onClick={() => setIsOpen(true)}>Reject ⌫</button>
-            {isOpen ? <Popup 
+            <button className="reject" onClick={() => setPopoverOpen(true)}>Reject ⌫</button>
+            {popoverOpen ? <Popup 
                 onSave={handlePopupSave} 
                 onCancel={handlePopupCancel}
                 startingComment={currentComment}
@@ -42,6 +40,7 @@ function Modal(props) {
     const [newData, setNewData] = useState([...props.parsedData])
     const [viewportWidth, setViewportWidth] = useState(1920);
     const [activeData, setActiveData] = useState(0);
+    const [popoverOpen, setPopoverOpen] = useState(false);
 
     const handleAccept = useCallback(() => {
         const prevFailureMessage = "Previous failure message - ";
@@ -111,26 +110,29 @@ function Modal(props) {
 
     useEffect(() => {
         function keyHandler(event) {
-            debugger
-            if(event.key === 'ArrowRight') {
-                handleNextData();
-            } else if (event.key === 'ArrowLeft') {
-                handlePreviousData();
-            } else if (event.key === 'Escape') {
-                handleSkip();
-            }  else if (event.key === 'Enter') {
-                handleAccept();
-            } else if (event.key === 'Backspace') {
-                handleReject();
+            // don't mess with the keyboard is popover is open, the user is typing
+            if(!popoverOpen) {
+                if (event.key === 'Enter') {
+                    handleAccept();
+                } else if (event.key === 'Backspace') {
+                    setPopoverOpen(true)
+                } else if(event.key === 'ArrowRight') {
+                    handleNextData();
+                } else if (event.key === 'ArrowLeft') {
+                    handlePreviousData();
+                } else if (event.key === 'Escape') {
+                    handleSkip();
+                }
             }
         }
         window.addEventListener('keyup', keyHandler);
+        // scroll up when item is done
         window.scrollTo(0, 0);
 
         return () => {
             window.removeEventListener('keyup', keyHandler);
         }
-    }, [activeData, handleAccept, handleNextData, handlePreviousData, handleReject, handleSkip])
+    }, [activeData, handleAccept, handleNextData, handlePreviousData, handleSkip, popoverOpen])
 
     return (
         <div id='modal'>
@@ -167,6 +169,8 @@ function Modal(props) {
                         onAccept={handleAccept}
                         onReject={handleReject}
                         currentComment={newData[activeData].comment}
+                        popoverOpen={popoverOpen}
+                        setPopoverOpen={setPopoverOpen}
                     />
                 </div>
                 <SitePreview 

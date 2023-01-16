@@ -23,6 +23,7 @@ export default function Popup(props) {
                         cols="100" 
                         onChange={handleOnChange}
                         value={comment}
+                        autoFocus
                     ></textarea>
                 </form>
                 <div className="popup-actions">

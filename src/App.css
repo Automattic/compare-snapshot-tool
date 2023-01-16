@@ -208,6 +208,7 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  z-index: 2;
   justify-content: center;
 }
 
