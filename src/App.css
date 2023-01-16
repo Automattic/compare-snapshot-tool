@@ -43,8 +43,8 @@
   border: 1px solid transparent;
   border-radius: 4px;
   color: #fff;
-  background-color: #016087;
-  border-color: #016087;
+  background-color: #0675c4;
+  border-color: #0675c4;
   text-transform: uppercase;
   min-width: 144px;
   height: auto;
@@ -103,8 +103,8 @@
 
 /* Component styles */
 
-.image-comparison-tool {
-  max-width: 1140px;
+.compare-snapshot-tool {
+  max-width: 800px;
   margin: 70px auto;
   padding-right: 15px;
   padding-left: 15px;
@@ -112,7 +112,39 @@
   margin-left: auto;
   border-radius: 6px;
   overflow: hidden;
+  text-align: center;
 }
+
+.compare-snapshot-tool .file-upload {
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  margin: 25px;
+  padding: 25px;
+}
+
+.compare-snapshot-tool .input-file, 
+.compare-snapshot-tool .csv-data {
+  padding-top: 25px;
+}
+
+.compare-snapshot-tool .options {
+  padding: 25px;
+}
+
+.compare-snapshot-tool label {
+  background-color: #fff;
+  color: black;
+  padding: 8px;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+#file-chosen{
+  margin-left: 8px;
+}
+
 
 #modal {
   padding: 100px;
@@ -157,9 +189,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.column {
 }
 
 .loading-panel {

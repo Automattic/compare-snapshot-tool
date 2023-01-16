@@ -1,0 +1,1 @@
+export const REQUIRED_HEADERS = ['oldUrl', 'newUrl', 'status', 'comment'];
