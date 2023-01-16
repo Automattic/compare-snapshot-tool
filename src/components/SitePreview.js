@@ -36,6 +36,8 @@ const Preview = (props) => {
         </div>
         <div
           ref={containerRef}
+          // the browser still thinks the iframe is 10000px tall, doesn't recognize the scale transform, so we shrink the div according to the scale factor
+          style={{height: 10000 * scaleFactor, overflow: 'hidden'}}
         >
           <iframe
             key={iframeKey}
