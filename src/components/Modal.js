@@ -40,6 +40,7 @@ const Skip = (props) => {
 
 function Modal(props) {
     const [newData, setNewData] = useState([...props.parsedData])
+    const [viewportWidth, setViewportWidth] = useState(1920);
     const [activeData, setActiveData] = useState(0);
 
     const handleAccept = () => {
@@ -111,6 +112,18 @@ function Modal(props) {
     return (
         <div id='modal'>
             <h2>Compare these pages!</h2>
+            {!props.usemShots && <div>
+                <label>
+                    <p>Viewport width ({viewportWidth}px)</p>
+                    <select value={viewportWidth} onChange={event => setViewportWidth(Number(event.currentTarget.value))}>
+                        <option value="320">Apple iPhone 4</option>
+                        <option value="375">Apple iPhone X</option>
+                        <option value="768">Apple iPad Air</option>
+                        <option value="1920">Desktop</option>
+                        <option value="5120">Retina</option>
+                    </select>
+                </label>
+            </div>}
             <div>
                 <div id="status">
                     <span id="status-text"></span>
@@ -130,6 +143,8 @@ function Modal(props) {
                     activeData={activeData}
                     oldUrl={newData[activeData].oldUrl}
                     newUrl={newData[activeData].newUrl}
+                    usemShots={props.usemShots}
+                    viewportWidth={viewportWidth}
                 />
                 <Skip onSkip={handleSkip}/>
                 <Download onDownload={handleDownload}/>
