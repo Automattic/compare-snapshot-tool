@@ -110,7 +110,7 @@ function Modal(props) {
 
     useEffect(() => {
         function keyHandler(event) {
-            // don't mess with the keyboard is popover is open, the user is typing
+            // don't mess with the keyboard when popover is open, the user is typing
             if(!popoverOpen) {
                 if (event.key === 'Enter') {
                     handleAccept();
