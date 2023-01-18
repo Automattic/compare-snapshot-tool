@@ -19,7 +19,7 @@ function FileUpload(props) {
             <p className='instructions-message'>Prepare your CSV file with the following columns: </p>
             <p><code>oldUrl</code>, <code>newUrl</code>, <code>status</code>, and <code>comment</code></p>
             <div className='input-file'>
-                <input id="actual-button" type="file" name="file" onChange={props.onHandleChange} accept=".csv" hidden/>
+                <input id="actual-button" type="file" name="file" onChange={props.onHandleChange} accept=".csv"/>
                 <label id='actual-button-label' htmlFor="actual-button">Choose File</label>
                 <span id="file-chosen">{props.fileName}</span>
                 { props.dataIsSet ? (
