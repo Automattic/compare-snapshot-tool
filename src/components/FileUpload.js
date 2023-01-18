@@ -1,21 +1,14 @@
 const Data = (props) => {
     const data = props.data;
-    const getTotalPassed = () => {
-      return data.filter((item) => item.status === "PASSED").length;
-    }
-  
-    const getTotalFailed = () => {
-      return data.filter((item) => item.status === "FAILED").length;
-    }
-  
-    const getRemaining = () => {
-      return data.filter((item) => !item.status).length;
-    }
+    const totalPassed = data.filter((item) => item.status === "PASSED").length;
+    const totalFailed = data.filter((item) => item.status === "FAILED").length;
+    const totalRemaining = data.filter((item) => !item.status).length;
+
     return(
       <div className='csv-data'>
         <p>{props.data.length} pages total</p>
-        <p>{getTotalPassed()} passed, {getTotalFailed()} failed</p>
-        <p>{getRemaining()} pages left to verify</p>
+        <p>{totalPassed} passed, {totalFailed} failed</p>
+        <p>{totalRemaining} pages left to verify</p>
       </div>
      )
   }
