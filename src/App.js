@@ -1,7 +1,7 @@
 
 import "./App.css";
 import { FileUpload, Instructions, Modal } from "./components";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Papa from "papaparse";
 import generateMShotsUrl from "./lib/mShots";
 import { REQUIRED_HEADERS } from "./constants/constants";
@@ -11,7 +11,7 @@ const dataIsSet = (data) => data && data.length > 0
 const Home = (props) => {
 	const [usemShots, setUsemShots] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
-	const handleChange = (event) => {
+	const handleChange = useCallback((event) => {
 		const file = event.target.files[0]
 		if (!file) {
 			props.setData([]);
@@ -49,7 +49,7 @@ const Home = (props) => {
 				}
       },
     });
-  }
+  }, [props]);
 
 
   return (
