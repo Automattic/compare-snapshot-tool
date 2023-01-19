@@ -1,46 +1,21 @@
 
 import "./App.css";
-import { Instructions, Modal } from "./components";
-import { useState } from "react";
+import { FileUpload, Instructions, Modal } from "./components";
+import { useCallback, useState } from "react";
 import Papa from "papaparse";
 import generateMShotsUrl from "./lib/mShots";
-
-const Header = (props) => {
-  return (
-    <header className="app-header">
-      <h1>{props.title}</h1>
-      <p>{props.message}</p>
-    </header>
-  );
-}
-
-const Data = (props) => {
-  const data = props.data;
-  const getTotalPassed = () => {
-    return data.filter((item) => item.status === "PASSED").length;
-  }
-
-  const getTotalFailed = () => {
-    return data.filter((item) => item.status === "FAILED").length;
-  }
-  return(
-    <div>
-      <p>Number of items: {props.data.length}</p>
-      <p>Total passed: {getTotalPassed()}</p>
-      <p>Total failed: {getTotalFailed()}</p>	
-    </div>
-   )
-}
+import { REQUIRED_HEADERS } from "./constants/constants";
 
 const dataIsSet = (data) => data && data.length > 0
 
 const Home = (props) => {
 	const [usemShots, setUsemShots] = useState(false);
-	const handleChange = (event) => {
-    const requiredHeaders = ['oldUrl', 'newUrl', 'status', 'comment'];
+  const [fileName, setFileName] = useState("No file chosen");
+	const handleChange = useCallback((event) => {
 		const file = event.target.files[0]
 		if (!file) {
 			props.setData([]);
+      setFileName("No file chosen");
 			return;
 		}
 
@@ -51,47 +26,48 @@ const Home = (props) => {
         const headers = results.meta.fields;
 				let isValid = true;
 				// All of the required headers must be present...
-				for (const requiredHeader of requiredHeaders) {
+				for (const requiredHeader of REQUIRED_HEADERS) {
 					if (!headers.includes(requiredHeader)) {
 						isValid = false;
 					}
 				}
 				// ... And there shouldn't be other excess headers
-				if (headers.length !== requiredHeaders.length) {
+				if (headers.length !== REQUIRED_HEADERS.length) {
 					isValid = false;
 				}
 
 				if (isValid) {
 					props.setData(results.data);
+          setFileName(file.name);
 				} else {
 					// You can't control file state directly in react, so we wipe the event value to reset the native HTML input state.
 					event.target.value = null;
 					props.setData([]);
-					alert("Please check the headers in the CSV file. The required headers are: oldUrl, newUrl, status, comment");
+          setFileName("No file chosen");
+          const message = "Please check the headers in the CSV file. The required headers are: " + REQUIRED_HEADERS.join(", ");
+					alert(message);
 				}
       },
     });
-  }
+  }, [props]);
 
 
   return (
-    <div className='image-comparison-tool'>
+    <div className='compare-snapshot-tool'>
       <Instructions />
-      <input type="file" name="file" className="input-file" onChange={handleChange} accept=".csv" />
-      { dataIsSet(props.data) ? (
-        <Data data={props.data}/>
-      ) : (
-        <div>
-          <p>Select a file to show details</p>  
-        </div>
-      )}
-	  <div>
-		<label>
-			<input type="checkbox" id="checkbox" checked={usemShots} onChange={event => setUsemShots(event.target.checked)} />
-			<span> Use mshots (not pure iframes)</span>
-		</label>
-	  </div>		
-      <button onClick={() => props.onSubmission(usemShots)}>Start comparing images</button>
+      <FileUpload 
+        data={props.data}
+        fileName={fileName}
+        onHandleChange={handleChange}
+        dataIsSet={dataIsSet(props.data)}
+      />
+      <div className='options'>
+        <label>
+          <input type="checkbox" id="checkbox" checked={usemShots} onChange={event => setUsemShots(event.target.checked)} />
+          <span> Use snapshots only</span>
+        </label>
+      </div>
+      <button onClick={() => props.onSubmission(usemShots)}>Compare</button>
     </div>
   )
 }
@@ -202,8 +178,7 @@ function App() {
 	}
 
   return (
-    <div id="main-app">
-      <Header title="Image Comparison Tool" />
+    <div id="main-app" data-testid="main-app">
 			{mainDisplay}
     </div>
   )
