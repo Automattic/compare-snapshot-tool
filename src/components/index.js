@@ -1,4 +1,5 @@
-
+export { default as Actions } from './Actions';
+export { default as Comment } from './Comment';
 export { default as Instructions } from './Instructions';
 export { default as SitePreview } from './SitePreview';
 export { default as Modal } from './Modal'; 
