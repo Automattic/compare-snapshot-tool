@@ -1,14 +1,25 @@
 import generateMShotsUrl from '../lib/mShots';
 import { useEffect, useState, useRef } from 'react';
+import { Comment } from './index.js';
 
 const Title = (props) => {
   return (
-    <span>
-      <strong>PAGE {props.index}: </strong>
-      <a href={props.url} target="_blank" rel="noreferrer">
-        {props.url}
-      </a>
-    </span>
+    <div>
+        <div>
+            <span>
+                <strong>{props.title}</strong>
+            </span>
+            <button className="reload-button" onClick={props.onReload}>Reload</button>
+        </div>
+        <div>
+            <p>
+                <a href={props.url} target="_blank" rel="noreferrer">
+                    {props.url}
+                </a>
+            </p>
+        </div>
+    </div>
+    
   );
 };
 
@@ -31,8 +42,11 @@ const Preview = (props) => {
     return (
       <div className="column">
         <div className="preview-top-bar">
-          <Title {...props}></Title>
-          <button onClick={handleReload}>Reload</button>
+          <Title 
+            title={props.title}
+            url={props.url}
+            onReload={handleReload}
+          />
         </div>
         <div
           ref={containerRef}
@@ -55,27 +69,36 @@ const Preview = (props) => {
     );
   };
 
-function SitePreview({activeData, oldUrl, usemShots, newUrl, viewportWidth}) {
-  let index = activeData + 1;
-  
+function SitePreview({currentIndex, currentData, usemShots, viewportWidth, commentTitle, status}) {
+  let index = currentIndex + 1;
   return (
-    <div id="preview-all">
-      <Preview
-        index={index}
-        url={oldUrl}
-        mShotsUrl={
-          usemShots ? generateMShotsUrl(oldUrl) : oldUrl
+    <div id="preview-all-test" className={`status-${status.toLowerCase()}`}>
+        { currentData.comment && 
+          <Comment 
+            commentTitle={commentTitle}
+            comment={currentData.comment}
+          />
         }
-        viewportWidth={viewportWidth}
-      />
-      <Preview
-        index={index}
-        url={newUrl}
-        mShotsUrl={
-          usemShots ? generateMShotsUrl(newUrl) : newUrl
-        }
-        viewportWidth={viewportWidth}
-      />
+        <div id="preview-all">
+          <Preview
+              title={'Old URL'}
+              index={index}
+              url={currentData.oldUrl}
+              mShotsUrl={
+                usemShots ? generateMShotsUrl(currentData.oldUrl) : currentData.oldUrl
+              }
+              viewportWidth={viewportWidth}
+          />
+          <Preview
+              title={'New URL'}
+              index={index}
+              url={currentData.newUrl}
+              mShotsUrl={
+                usemShots ? generateMShotsUrl(currentData.newUrl) : currentData.newUrl
+              }
+              viewportWidth={viewportWidth}
+          />
+        </div>
     </div>
   );
 }
