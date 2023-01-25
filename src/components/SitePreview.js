@@ -69,10 +69,10 @@ const Preview = (props) => {
     );
   };
 
-function SitePreview({currentIndex, currentData, usemShots, viewportWidth, commentTitle, style}) {
+function SitePreview({currentIndex, currentData, usemShots, viewportWidth, commentTitle, status}) {
   let index = currentIndex + 1;
   return (
-    <div id="preview-all-test" style={style}>
+    <div id="preview-all-test" className={`status-${status.toLowerCase()}`}>
         { currentData.comment && 
           <Comment 
             commentTitle={commentTitle}

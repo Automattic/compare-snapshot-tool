@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigation, Popup } from "./index.js";
 
-export function Actions ({data, setData, currentIndex, setCurrentIndex, setCommentTitle, style}) {
+export function Actions ({data, setData, currentIndex, setCurrentIndex, setCommentTitle, status}) {
     const [popoverOpen, setPopoverOpen] = useState(false);
 
     const handleAccept = useCallback(() => {
         let comment = data[currentIndex].comment;
-        if ( data[currentIndex].status === 'FAILED' && comment.length > 0 ) {
+        if ( data[currentIndex].status === 'FAILED' && comment ) {
             setCommentTitle('Comment from Previous Failure');
         }
 
@@ -64,12 +64,10 @@ export function Actions ({data, setData, currentIndex, setCurrentIndex, setComme
 		setPopoverOpen(false);
 	}, [setPopoverOpen])
 
-    const status = !data[currentIndex].status ? 'Unverified' : data[currentIndex].status;
-
     return (
         <div className="preview-details">
-            <div id="preview-status" style={style}>
-                <span style={{ fontSize: '25px', display: 'inline-block', margin: '5px'}}>{status}</span>
+            <div id="preview-status" className={`status-${status.toLowerCase()}`}>
+                <span className="status">{status}</span>
             </div>
             <Navigation
                 currentData={data[currentIndex]}

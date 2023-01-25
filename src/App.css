@@ -277,3 +277,24 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.status {
+  font-size: 25px;
+  display: inline-block;
+  margin: 5px;
+}
+
+.status-unverified {
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+}
+
+.status-passed {
+  background-color: #e6f2e8;
+  border: 1px solid #68de86;
+}
+
+.status-failed {
+  background-color: #f7ebec;
+  border: 1px solid #ffabaf;
+}
