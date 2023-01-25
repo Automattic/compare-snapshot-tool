@@ -33,7 +33,8 @@ export function Actions ({data, setData, currentIndex, setCurrentIndex, setComme
             }
             return data;
         }));
-    }, [currentIndex, setData]);
+        setCommentTitle('Comment');
+    }, [currentIndex, setData, setCommentTitle]);
 
     useEffect(() => {
         function keyHandler(event) {
@@ -82,7 +83,7 @@ export function Actions ({data, setData, currentIndex, setCurrentIndex, setComme
                 {popoverOpen ? <Popup 
                     onSave={handlePopupSave} 
                     onCancel={handlePopupCancel}
-                    startingComment={data.comment}
+                    startingComment={data[currentIndex].comment}
                 /> 
                 : null}
             </div>
