@@ -3,27 +3,43 @@ import { useCallback, useEffect } from "react";
 function Navigation ({ data, currentIndex, setCurrentIndex, popoverOpen }) {
     const handleNextData = useCallback(() => {
         const length = data.length;
-        var index = currentIndex + 1;
+        let index = currentIndex + 1;
         index = index % length;
         setCurrentIndex(index);
     }, [setCurrentIndex, currentIndex, data]);
     
     const handlePreviousData = useCallback(() => {
         const length = data.length;
-        var index = currentIndex;
+        let index = currentIndex;
         index = index === 0 ? length - 1 : index - 1;
         setCurrentIndex(index);
     }, [setCurrentIndex, currentIndex, data]);
 
     const handleNextUnverified = useCallback(() => {
-        let index = data.findIndex( (currentData, idx) => idx > currentIndex && !currentData.status);
-        index = index === -1 ? data.findIndex( (currentData) => !currentData.status) : index;
+        let map = data.map(d => d.status);
+        let index = map.indexOf('', currentIndex + 1);
+        if (index === -1) {
+            index = map.indexOf('');
+            // In case nothing was ever found, stay on the currentIndex
+            if (index === -1) {
+                alert("All items are verified.");
+                index = currentIndex;
+            }
+        }
         setCurrentIndex(index);
     }, [setCurrentIndex, currentIndex, data]);
 
     const handlePrevUnverified = useCallback(() => {
-        let index = data.findLastIndex( (currentData, idx) => idx < currentIndex && !currentData.status);
-        index = index === -1 ? data.findLastIndex( (currentData) => !currentData.status) : index;
+        let map = data.map(d => d.status);
+        let index = map.lastIndexOf('', currentIndex - 1);
+        if (index === -1) {
+            index = map.lastIndexOf('');
+            // In case nothing was ever found, stay on the currentIndex
+            if (index === -1) {
+                alert("All items are verified.");
+                index = currentIndex;
+            }
+        }
         setCurrentIndex(index);
     }, [setCurrentIndex, currentIndex, data]);
 
